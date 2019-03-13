@@ -24,11 +24,12 @@ export const onLogin = (paramUsername,password) => {
                 dispatch(
                     {
                         type : 'LOGIN_SUCCESS',
-                        payload : 
-                        {
-                             username : res.data[0].username,
-                             role : res.data[0].role
-                        }
+                        payload : res.data[0]
+                        // {
+                        //      username : res.data[0].username,
+                        //      role : res.data[0].role,
+                        //      id : res.data[0].id
+                        // }
                     }
                 )
             }else{
@@ -55,11 +56,11 @@ export const keepLogin = (cookie) => {
             if(res.data.length > 0){
                 dispatch({
                     type : 'LOGIN_SUCCESS',
-                    payload : 
-                        {
-                             username : res.data[0].username,
-                             role : res.data[0].role
-                        }
+                    payload : res.data[0]
+                        // {
+                        //      username : res.data[0].username,
+                        //      role : res.data[0].role
+                        // }
                 })
             }
         })
