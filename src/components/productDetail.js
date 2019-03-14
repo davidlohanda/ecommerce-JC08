@@ -1,6 +1,7 @@
 import React from 'react'
 import Axios from 'axios';
 import { urlApi } from '../support/urlApi';
+import { connect } from 'react-redux'
 
 class ProductDetail extends React.Component{
     state = {product : {}}
@@ -17,7 +18,13 @@ class ProductDetail extends React.Component{
             console.log(err)
         })
     }
-    render(){
+    qtyValidation =() => {
+        var qty = this.refs.inputQty.value
+        if(qty < 1) {
+            this.refs.inputQty.value = 1
+        }
+    }
+     render(){
         var {nama,img,discount,deskripsi,harga} = this.state.product
         return(
             <div className='container'>
@@ -57,7 +64,7 @@ class ProductDetail extends React.Component{
                                         color:'#606060',
                                         fontWeight:'700',
                                         fontSize:'14px'}}>Jumlah</div>
-                                <input type='number' min={1} className='form-control' style={{width : '60px',
+                                <input type='number' onChange={this.qtyValidation} ref='inputQty' min={1} className='form-control' style={{width : '60px',
                                                                                               marginTop:'10px'}} />
                             </div>
                             <div className='col-md-6'>
@@ -75,11 +82,20 @@ class ProductDetail extends React.Component{
                             </div>
 
                         </div>
-                        <div className='row mt-4'>
-                            <input className='btn border-secondary col-md-2' value='Add To Wishlist' />
-                            <input className='btn btn-primary col-md-3' value='Beli Sekarang' />
-                            <input className='btn btn-success col-md-3' value='Masukan Ke Keranjang' />
-                        </div>
+                        {this.props.username === "" 
+                        ?
+                            <div className='row mt-4'>
+                                <input type='button' disabled className='btn border-secondary col-md-2' value='Add To Wishlist' />
+                                <input type='button' disabled className='btn btn-primary col-md-3' value='Beli Sekarang' />
+                                <input type='button' disabled className='btn btn-success col-md-3' value='Masukan Ke Keranjang' />
+                            </div>
+                        :
+                            <div className='row mt-4'>
+                                <input type='button' className='btn border-secondary col-md-2' value='Add To Wishlist' />
+                                <input type='button' className='btn btn-primary col-md-3' value='Beli Sekarang' />
+                                <input type='button' className='btn btn-success col-md-3' value='Masukan Ke Keranjang' />
+                            </div>
+                        }
                         
                     </div>
                 </div>
@@ -88,4 +104,10 @@ class ProductDetail extends React.Component{
     }
 }
 
-export default ProductDetail;
+const mapStateToProps = (state) => {
+    return {
+        username : state.user.username
+    }
+}
+
+export default connect(mapStateToProps)(ProductDetail);

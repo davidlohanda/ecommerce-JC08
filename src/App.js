@@ -25,6 +25,7 @@ class App extends Component {
       this.props.keepLogin(terserah)
     }
   }
+  
   render() {
     return (
       <div>
