@@ -1,6 +1,6 @@
 import React from 'react'
 import './../support/css/pageNotFound.css'
-
+import { Link } from 'react-router-dom'
 
 class PageNotFound extends React.Component {
     render(){
@@ -11,7 +11,7 @@ class PageNotFound extends React.Component {
                 <h1>Oops!</h1>
                 <h2>404 - The Page can't be found</h2>
               </div>
-              <a href="#">Go TO Homepage</a>
+              <Link to='/'> <a>Go TO Homepage</a></Link>
             </div>
           </div>
         )

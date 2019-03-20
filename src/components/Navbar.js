@@ -3,7 +3,7 @@ import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink,Unc
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux'
 import terserah from 'universal-cookie'
-import { resetUser } from './../1.actions'
+import { resetUser,resetCount } from './../1.actions'
 
 const objCookie = new terserah()
 class HeaderKu extends Component{
@@ -25,6 +25,7 @@ class HeaderKu extends Component{
     onBtnLogout = () => {
         objCookie.remove('userData')
         this.props.resetUser()
+        this.props.resetCount()
     }
 
     render(){
@@ -78,7 +79,7 @@ class HeaderKu extends Component{
                                         <NavLink>Hi , {this.props.bebas}</NavLink>
                                     </NavItem>
                                     <NavItem>
-                                        <Link to="/login"><NavLink className="btn btn-default border-primary" style={{fontSize:"14px"}}><i class="fas fa-shopping-cart"></i> Cart </NavLink></Link>
+                                        <Link to="/cart"><NavLink className="btn btn-default border-primary" style={{fontSize:"14px"}}><i class="fas fa-shopping-cart"></i>{this.props.cart} Cart </NavLink></Link>
                                     </NavItem>
                                     <UncontrolledDropdown nav inNavbar>
                                         <DropdownToggle nav caret>
@@ -96,11 +97,11 @@ class HeaderKu extends Component{
                                             :
                                             null
                                         }
-                                        <DropdownItem>
+                                        <Link to='history'> <DropdownItem>
                                             Histori Transaksi
-                                        </DropdownItem>
+                                        </DropdownItem></Link>
                                         <DropdownItem>
-                                            Edit Profile
+                                            Edit Profile 
                                         </DropdownItem>
                                         <DropdownItem divider />
                                         <DropdownItem onClick={this.onBtnLogout}>
@@ -121,10 +122,11 @@ class HeaderKu extends Component{
 const mapStateToProps = (state) => {
     return {
         bebas : state.user.username,
-        role : state.user.role
+        role : state.user.role,
+        cart : state.cart.count
     }
 }
 
 
 
-export default connect(mapStateToProps,{resetUser})(HeaderKu);
+export default connect(mapStateToProps,{resetUser,resetCount})(HeaderKu);

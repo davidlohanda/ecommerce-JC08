@@ -3,11 +3,16 @@ import axios from 'axios'
 import {Link} from 'react-router-dom'
 import { urlApi } from './../support/urlApi'
 import './../support/css/product.css'
+import Axios from 'axios';
+import swal from 'sweetalert';
+import { cartCount } from './../1.actions'
+import { connect} from 'react-redux'
 
 class ProductList extends React.Component{
     state = {listProduct : []}
 
     componentDidMount(){
+    
         this.getDataProduct()
     }
     getDataProduct = () => {
@@ -15,8 +20,29 @@ class ProductList extends React.Component{
         .then((res) => this.setState({listProduct : res.data}))
         .catch((err) => console.log(err))
     }
+    addProduct = (obj) => {
+        var newData = {
+            idUser : this.props.id,
+            discount : obj.discount,
+            namaProduk : obj.nama,
+            harga : obj.harga,
+            qty : 1,
+        }
+        Axios.get(urlApi + '/cart?namaProduk=' + newData.namaProduk + '&idUser=' + this.props.id).then((res) => {
+            if(res.data.length > 0){
+                Axios.put(urlApi + '/cart/' + res.data[0].id , {...newData , qty : parseInt(res.data[0].qty) + newData.qty})
+                swal('Add Product' , 'Suksees' , 'success')
+            }else{
+                Axios.post(urlApi + '/cart' , newData).then((res) => {
+                    swal('Add Product' , 'Suksees' , 'success')
+                    this.props.cartCount(this.props.username)
+                })
+            }
+        })
+    }
     renderProdukJsx = () => {
         var jsx = this.state.listProduct.map((val) => {
+            // if(val.nama.toLowerCase().startsWith(this.props.search.toLowerCase())){ // Transfer dari Parent Ke Child
             return (
                 <div className="card col-md-3 mr-5 mt-3" style={{width: '18rem'}}>
                     <Link to={'/product-detail/' + val.id}><img className="card-img-top img" height='200px' src={val.img} alt="Card" /></Link>
@@ -39,10 +65,11 @@ class ProductList extends React.Component{
                     }
 
                     <p style={{display:'inline' , marginLeft:'10px',fontWeight:'500'}}>Rp. {val.harga - (val.harga*(val.discount/100))}</p>
-                    <input type='button' className='d-block btn btn-primary' value='Add To Cart' />
+                    <input type='button' className='d-block btn btn-primary' onClick={()=> this.addProduct(val)} value='Add To Cart' />
                     </div>
                 </div>
             )
+        //  }
         })
 
         return jsx
@@ -58,7 +85,14 @@ class ProductList extends React.Component{
     }
 }
 
-export default ProductList
+const mapStateToProps = (state) => {
+    return{
+         id : state.user.id,
+         username : state.user.username
+    }
+}
+
+export default connect(mapStateToProps,{cartCount})(ProductList);
 
 
 

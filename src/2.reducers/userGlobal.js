@@ -1,4 +1,4 @@
-const INITIAL_STATE = {id : 0, username : "",error : "",loading:false, role : ""}
+const INITIAL_STATE = {id : 0, username : "",role : "",error : "",loading:false,  cookie : false}
 
 export default (state=INITIAL_STATE,action) => {
     // if(action.type === 'LOGIN_SUCCESS'){
@@ -20,20 +20,23 @@ export default (state=INITIAL_STATE,action) => {
     switch(action.type){
         case 'LOGIN_SUCCESS':
             return {...INITIAL_STATE,
-                 username : action.payload.username,
-                 role : action.payload.role,
-                 id : action.payload.id
+                 username : action.payload[0].username,
+                 role : action.payload[0].role,
+                 id : action.payload[0].id,
+                 cookie : true
                 }
         case 'LOADING':
-            return{...INITIAL_STATE , loading : true}
+            return{...INITIAL_STATE , loading : true,cookie : true}
         case 'USER_NOT_FOUND':
-             return{...INITIAL_STATE , error : 'Username atau password salah'}
+             return{...INITIAL_STATE , error : action.payload[1] , cookie : true}
         case 'SYSTEM_ERROR':
-            return {...INITIAL_STATE , error : 'System Error'} 
+            return {...INITIAL_STATE , error : 'System Error' ,cookie: true} 
         case 'RESET_USER' :
-            return INITIAL_STATE
+            return {...INITIAL_STATE , cookie:true}
         case 'USERNAME_NOT_AVAILABLE':
-            return {...INITIAL_STATE, error : 'Username not available'}
+            return {...INITIAL_STATE, error : 'Username not available',cookie: true}
+        case 'COOKIE_CHECKED' :
+            return {...state, cookie : true}
         default :
             return state
     }

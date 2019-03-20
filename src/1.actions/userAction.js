@@ -11,9 +11,7 @@ export const onLogin = (paramUsername,password) => {
         })
 
         // GET DATA DARI FAKE API JSON SERVER
-        axios.get(urlApi + '/users',{
-            params:{username :paramUsername,
-                    password}})
+        axios.get(urlApi + '/users?username='+paramUsername+'&password='+password)
         
         // KALO BERHASIL NGE GET, DIA MASUK THEN
         .then((res) => {
@@ -21,10 +19,11 @@ export const onLogin = (paramUsername,password) => {
 
         // IF USERNAME DAN PASSWORD SESUAI MAKA RES.DATA ADA ISINYA
             if(res.data.length > 0){
+                console.log(res)
                 dispatch(
                     {
                         type : 'LOGIN_SUCCESS',
-                        payload : res.data[0]
+                        payload : res.data
                         // {
                         //      username : res.data[0].username,
                         //      role : res.data[0].role,
@@ -35,6 +34,7 @@ export const onLogin = (paramUsername,password) => {
             }else{
                 dispatch({
                     type : 'USER_NOT_FOUND',
+                    payload : ['','Username not Found']
                 })
             }
             
@@ -49,6 +49,7 @@ export const onLogin = (paramUsername,password) => {
 }
 
 
+
 export const keepLogin = (cookie) => {
     return(dispatch) => {
         axios.get(urlApi + '/users',{params : {username : cookie}})
@@ -56,7 +57,7 @@ export const keepLogin = (cookie) => {
             if(res.data.length > 0){
                 dispatch({
                     type : 'LOGIN_SUCCESS',
-                    payload : res.data[0]
+                    payload : res.data
                         // {
                         //      username : res.data[0].username,
                         //      role : res.data[0].role
@@ -68,6 +69,11 @@ export const keepLogin = (cookie) => {
     }
 } 
 
+export const cookieChecked = () => {
+    return {
+        type : 'COOKIE_CHECKED'
+    }
+}
 
 export const resetUser = () => {
     return {
@@ -119,7 +125,7 @@ export const loginWithGoogle = (email) => {
             if(res.data.length > 0){
                 dispatch({
                     type :'LOGIN_SUCCESS',
-                    payload : res.data[0]
+                    payload : res.data
                 },
                     objCookie.set('userData',email,{path : '/'})
                 )

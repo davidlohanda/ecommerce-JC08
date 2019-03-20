@@ -2,12 +2,15 @@ import React from 'react'
 import Axios from 'axios';
 import { urlApi } from '../support/urlApi';
 import { connect } from 'react-redux'
+import { cartCount } from './../1.actions'
+import swal from 'sweetalert';
 
 class ProductDetail extends React.Component{
     state = {product : {}}
     componentDidMount(){
         this.getDataApi()
     }
+    
     getDataApi = () => {
         var idUrl = this.props.match.params.terserah
         Axios.get(urlApi+'/products/' + idUrl)
@@ -23,6 +26,30 @@ class ProductDetail extends React.Component{
         if(qty < 1) {
             this.refs.inputQty.value = 1
         }
+    }
+    onBtnAddProduct = () => {
+        var newData = {
+            idUser : this.props.id,
+            discount : this.state.product.discount,
+            namaProduk : this.state.product.nama,
+            harga : this.state.product.harga,
+            qty : this.refs.inputQty.value,
+        }
+        Axios.get(urlApi + '/cart?namaProduk=' + this.state.product.nama + '&idUser=' + this.props.id).then((res) => {
+            if(res.data.length > 0){
+                Axios.put(urlApi + '/cart/' + res.data[0].id, {...newData, qty: parseInt(res.data[0].qty) + parseInt(this.refs.inputQty.value) })
+                swal('Status Add' , 'Success Add to Cart' , 'success')
+            }else{
+                Axios.post(urlApi + '/cart',newData)
+                .then((res) => {
+                    swal('Status Add' , 'Success Add to Cart' , 'success')
+                    this.props.cartCount(this.props.username)
+                })
+                .catch((err) => console.log(err))
+            }
+        })
+        
+    
     }
      render(){
         var {nama,img,discount,deskripsi,harga} = this.state.product
@@ -64,7 +91,7 @@ class ProductDetail extends React.Component{
                                         color:'#606060',
                                         fontWeight:'700',
                                         fontSize:'14px'}}>Jumlah</div>
-                                <input type='number' onChange={this.qtyValidation} ref='inputQty' min={1} className='form-control' style={{width : '60px',
+                                <input type='number' onChange={this.qtyValidation} ref='inputQty' defaultValue={1} min={1} className='form-control' style={{width : '60px',
                                                                                               marginTop:'10px'}} />
                             </div>
                             <div className='col-md-6'>
@@ -93,7 +120,7 @@ class ProductDetail extends React.Component{
                             <div className='row mt-4'>
                                 <input type='button' className='btn border-secondary col-md-2' value='Add To Wishlist' />
                                 <input type='button' className='btn btn-primary col-md-3' value='Beli Sekarang' />
-                                <input type='button' className='btn btn-success col-md-3' value='Masukan Ke Keranjang' />
+                                <input type='button' className='btn btn-success col-md-3' onClick={this.onBtnAddProduct} value='Masukan Ke Keranjang' />
                             </div>
                         }
                         
@@ -106,8 +133,10 @@ class ProductDetail extends React.Component{
 
 const mapStateToProps = (state) => {
     return {
-        username : state.user.username
+        username : state.user.username,
+        id : state.user.id,
+        cart : state.cart.count
     }
 }
 
-export default connect(mapStateToProps)(ProductDetail);
+export default connect(mapStateToProps,{cartCount})(ProductDetail);

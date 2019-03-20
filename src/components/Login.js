@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link ,Redirect} from 'react-router-dom'
 import { connect } from 'react-redux'
-import { onLogin } from './../1.actions'
+import { onLogin,cartCount } from './../1.actions'
 import Loader from 'react-loader-spinner'
 import cookie from 'universal-cookie'
 
@@ -12,12 +12,15 @@ class Login extends React.Component{
     // KE TRIGER KALAU ADA PERUBAHAN PROPS YAITU GLOBAL STATE
     componentWillReceiveProps(newProps){
         console.log(newProps)
-        Cookie.set('userData',newProps.username,{path :'/'})
+        if(newProps.username !== ""){
+            this.props.cartCount(newProps.username)        
+        Cookie.set('userData',newProps.username,{path :'/'})}
     }
     onBtnLoginClick = () => {
         var username = this.refs.username.value // fikri
         var password = this.refs.password.value // rahasia123
         this.props.onLogin(username,password)
+
     }
 
     renderBtnOrLoading = () => {
@@ -91,4 +94,4 @@ const mapsStateToProps =(state) => {
 }
 
 
-export default connect(mapsStateToProps,{ onLogin })(Login)
+export default connect(mapsStateToProps,{ onLogin,cartCount })(Login)
